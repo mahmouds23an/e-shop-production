@@ -111,4 +111,70 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, adminLogin, getCurrentUser };
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, email, password } = req.body;
+
+    // Fetch the current user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Update profile fields
+    if (name) user.name = name;
+    if (email) {
+      if (!validator.isEmail(email)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid email" });
+      }
+      user.email = email;
+    }
+
+    // Update password
+    if (password) {
+      if (password.length < 8) {
+        return res.status(400).json({
+          success: false,
+          message: "Password must be at least 8 characters",
+        });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Handle profile picture upload
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: "image",
+      });
+      user.profilePicture = result.secure_url;
+    }
+
+    // Save updated user
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      // user: {
+      //   name: user.name,
+      //   email: user.email,
+      //   profilePicture: user.profilePicture,
+      // },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export {
+  registerUser,
+  loginUser,
+  adminLogin,
+  getCurrentUser,
+  updateUserProfile,
+};
