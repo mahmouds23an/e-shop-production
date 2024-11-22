@@ -10,7 +10,7 @@ const createToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, profilePicture } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -35,6 +35,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      profilePicture: profilePicture ? profilePicture : "",
     });
 
     const user = await newUser.save();
