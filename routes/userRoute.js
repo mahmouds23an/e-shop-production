@@ -7,7 +7,7 @@ import {
   updateUserProfile,
 } from "../controllers/userController.js";
 import authUser from "../middleware/auth.js";
-import upload from "../middleware/multer.js";
+import uploadProfileImage from "../middleware/multer.js";
 
 const userRouter = express.Router();
 
@@ -18,7 +18,7 @@ userRouter.get("/current-user", authUser, getCurrentUser);
 userRouter.post(
   "/update-profile",
   authUser,
-  upload.single("profilePicture"),
+  uploadProfileImage.single("profilePicture"),
   updateUserProfile
 );
 

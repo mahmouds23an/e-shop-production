@@ -161,11 +161,11 @@ const updateUserProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      // user: {
-      //   name: user.name,
-      //   email: user.email,
-      //   profilePicture: user.profilePicture,
-      // },
+      user: {
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture,
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

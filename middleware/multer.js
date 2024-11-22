@@ -9,3 +9,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 export default upload;
+
+const uploadProfileImage = multer({
+  storage: multer.diskStorage({
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    },
+  }),
+}).single("image");
+
+export { uploadProfileImage };
