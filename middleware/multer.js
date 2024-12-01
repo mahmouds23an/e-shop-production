@@ -16,6 +16,6 @@ const uploadProfileImage = multer({
       cb(null, file.originalname);
     },
   }),
-}).single("image");
+}).single("profilePicture");
 
 export { uploadProfileImage };

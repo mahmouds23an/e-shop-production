@@ -3,6 +3,7 @@ import reviewModel from "../models/reviewModel.js";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { v2 as cloudinary } from "cloudinary";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
@@ -10,7 +11,13 @@ const createToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, profilePicture = "" } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      profilePicture = "",
+    } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -116,7 +123,7 @@ const getCurrentUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email } = req.body;
 
     // Fetch the current user
     const user = await userModel.findById(userId);
@@ -136,18 +143,6 @@ const updateUserProfile = async (req, res) => {
           .json({ success: false, message: "Invalid email" });
       }
       user.email = email;
-    }
-
-    // Update password
-    if (password) {
-      if (password.length < 8) {
-        return res.status(400).json({
-          success: false,
-          message: "Password must be at least 8 characters",
-        });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      user.password = hashedPassword;
     }
 
     // Handle profile picture upload

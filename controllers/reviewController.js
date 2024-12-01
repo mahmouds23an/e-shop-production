@@ -20,6 +20,7 @@ const addReview = async (req, res) => {
       rating,
       comment,
       userName: req.user.firstName + " " + req.user.lastName,
+      userPicture: req.user.profilePicture,
       createdAt: Date.now(),
     });
 
@@ -88,7 +89,7 @@ const getReviewsByProductId = async (req, res) => {
     const { productId } = req.params;
     const reviews = await reviewModel
       .find({ productId })
-      .populate("userId", "name");
+      .populate("userId", "firstName lastName profilePicture");
     return res.status(200).json({ success: true, reviews });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
