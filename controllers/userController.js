@@ -10,7 +10,7 @@ const createToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profilePicture = "" } = req.body;
+    const { firstName, lastName, email, password, profilePicture = "" } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -32,7 +32,8 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new userModel({
-      name,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       profilePicture,
@@ -115,7 +116,7 @@ const getCurrentUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     // Fetch the current user
     const user = await userModel.findById(userId);
@@ -126,7 +127,8 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Update profile fields
-    if (name) user.name = name;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
     if (email) {
       if (!validator.isEmail(email)) {
         return res
@@ -162,7 +164,8 @@ const updateUserProfile = async (req, res) => {
       success: true,
       message: "Profile updated successfully",
       user: {
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         profilePicture: user.profilePicture,
       },

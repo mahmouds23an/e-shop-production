@@ -19,7 +19,7 @@ const addReview = async (req, res) => {
       userId,
       rating,
       comment,
-      userName: req.user.name,
+      userName: req.user.firstName + " " + req.user.lastName,
       createdAt: Date.now(),
     });
 
@@ -33,7 +33,7 @@ const addReview = async (req, res) => {
 const editReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const { content, rating } = req.body; 
+    const { content, rating } = req.body;
 
     const userId = req.user.id;
 
