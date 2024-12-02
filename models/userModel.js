@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
+      default:
+        "https://w7.pngwing.com/pngs/463/441/png-transparent-avatar-human-people-profile-user-web-user-interface-icon.png",
     },
     cartData: {
       type: Object,

@@ -5,6 +5,7 @@ import {
   adminLogin,
   getCurrentUser,
   updateUserProfile,
+  removeProfilePicture,
 } from "../controllers/userController.js";
 import authUser from "../middleware/auth.js";
 import uploadProfileImage from "../middleware/multer.js";
@@ -21,5 +22,6 @@ userRouter.post(
   uploadProfileImage.single("profilePicture"),
   updateUserProfile
 );
+userRouter.post("/remove-profile-picture", authUser, removeProfilePicture);
 
 export default userRouter;

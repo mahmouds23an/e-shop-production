@@ -4,6 +4,8 @@ import validator from "validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
+const avatar =
+  "https://w7.pngwing.com/pngs/463/441/png-transparent-avatar-human-people-profile-user-web-user-interface-icon.png";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
@@ -11,13 +13,7 @@ const createToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      profilePicture = "",
-    } = req.body;
+    const { firstName, lastName, email, password, profilePicture } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -149,6 +145,7 @@ const updateUserProfile = async (req, res) => {
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "image",
+        folder: "avatars",
       });
       user.profilePicture = result.secure_url;
     }
@@ -170,10 +167,37 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const removeProfilePicture = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (user.profilePicture && user.profilePicture !== avatar) {
+      const publicId = user.profilePicture.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`avatars/${publicId}`);
+      user.profilePicture = avatar;
+      await user.save();
+    } else {
+      return res.status(400).json({ message: "No picture to remove" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Profile Picture removed successfully", success: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   registerUser,
   loginUser,
   adminLogin,
   getCurrentUser,
   updateUserProfile,
+  removeProfilePicture,
 };
