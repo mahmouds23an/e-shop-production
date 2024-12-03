@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema(
       type: Object,
       default: {},
     },
+    favoriteProducts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   { minimize: false }
 );

@@ -6,6 +6,8 @@ import {
   getCurrentUser,
   updateUserProfile,
   removeProfilePicture,
+  addToFavorites,
+  removeFromFavorites,
 } from "../controllers/userController.js";
 import authUser from "../middleware/auth.js";
 import uploadProfileImage from "../middleware/multer.js";
@@ -23,5 +25,7 @@ userRouter.post(
   updateUserProfile
 );
 userRouter.post("/remove-profile-picture", authUser, removeProfilePicture);
+userRouter.post("/add-to-favorites", authUser, addToFavorites);
+userRouter.post("/remove-from-favorites", authUser, removeFromFavorites);
 
 export default userRouter;

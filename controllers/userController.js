@@ -13,7 +13,14 @@ const createToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, profilePicture } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      profilePicture,
+      favoriteProducts,
+    } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -40,6 +47,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       profilePicture,
+      favoriteProducts,
     });
 
     const user = await newUser.save();
@@ -105,12 +113,29 @@ const adminLogin = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await userModel.findById(userId);
+
+    // Find user and populate favorite products and reviews
+    const user = await userModel
+      .findById(userId)
+      .populate("favoriteProducts", "name")
+      .exec();
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
     const reviews = await reviewModel
       .find({ userId })
       .populate("productId", "name")
       .exec();
-    return res.status(200).json({ success: true, user, reviews });
+
+    return res.status(200).json({
+      success: true,
+      user,
+      reviews,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -193,6 +218,62 @@ const removeProfilePicture = async (req, res) => {
   }
 };
 
+const addToFavorites = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productId } = req.body;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    if (user.favoriteProducts.includes(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Product already in favorites" });
+    }
+    user.favoriteProducts.push(productId);
+    await user.save();
+    const updatedUser = await userModel
+      .findById(userId)
+      .populate("favoriteProducts", "name")
+      .exec();
+    return res
+      .status(200)
+      .json({ success: true, message: "Product added to favorites" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const removeFromFavorites = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productId } = req.body;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    if (!user.favoriteProducts.includes(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Product not in favorites" });
+    }
+    user.favoriteProducts = user.favoriteProducts.filter(
+      (id) => id !== productId
+    );
+    await user.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Product removed from favorites" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -200,4 +281,6 @@ export {
   getCurrentUser,
   updateUserProfile,
   removeProfilePicture,
+  addToFavorites,
+  removeFromFavorites,
 };
