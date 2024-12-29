@@ -33,7 +33,7 @@ const placeOrderStripe = async (req, res) => {};
 
 const allOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({});
+    const orders = await orderModel.find({}).sort({ date: -1 });
     if (!orders) {
       return res
         .status(404)
