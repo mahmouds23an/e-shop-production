@@ -41,7 +41,7 @@ const getEvents = async (req, res) => {
 
 const updateEvent = async (req, res) => {
   try {
-    const { id, title, description, linkText, endDate, imageUrl, active } =
+    const { id, title, description, linkText, endDate, imageUrl, isActive } =
       req.body;
     await eventModel.findByIdAndUpdate(
       id,
@@ -51,7 +51,7 @@ const updateEvent = async (req, res) => {
         linkText,
         endDate,
         imageUrl,
-        active,
+        isActive,
       },
       {
         new: true,
