@@ -68,6 +68,7 @@ const addProduct = async (req, res) => {
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({});
+    console.log(products);
     if (!products) {
       return res
         .status(404)
