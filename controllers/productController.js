@@ -67,21 +67,48 @@ const addProduct = async (req, res) => {
 
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({});
-    console.log(products);
-    if (!products) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No products found" });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
+    const { category, subCategory, sortType, searchQuery } = req.query;
+
+    let query = {};
+
+    if (searchQuery) {
+      query.name = { $regex: searchQuery, $options: 'i' };
     }
-    if (products.length === 0) {
-      return res
-        .status(200)
-        .json({ success: true, count: products.length, products: [] });
+
+    if (category) {
+      query.category = { $in: category.split(',') };
     }
-    return res
-      .status(200)
-      .json({ success: true, count: products.length, products });
+
+    if (subCategory) {
+      query.subCategory = { $in: subCategory.split(',') };
+    }
+
+    let sortOptions = {};
+    if (sortType === 'low-high') {
+      sortOptions.price = 1;
+    } else if (sortType === 'high-low') {
+      sortOptions.price = -1;
+    }
+
+    const products = await productModel.find(query).sort(sortOptions).skip(skip).limit(limit);
+    const totalProducts = await productModel.countDocuments(query);
+
+    if (!products || products.length === 0) {
+      return res.status(200).json({ success: true, count: 0, products: [] });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      products,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
