@@ -68,7 +68,7 @@ const addProduct = async (req, res) => {
 const listProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 1000;
+    let limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
 
     const { category, subCategory, sortType, searchQuery } = req.query;
@@ -76,26 +76,35 @@ const listProducts = async (req, res) => {
     let query = {};
 
     if (searchQuery) {
-      query.name = { $regex: searchQuery, $options: 'i' };
+      query.name = { $regex: searchQuery, $options: "i" };
     }
 
     if (category) {
-      query.category = { $in: category.split(',') };
+      query.category = { $in: category.split(",") };
     }
 
     if (subCategory) {
-      query.subCategory = { $in: subCategory.split(',') };
+      query.subCategory = { $in: subCategory.split(",") };
     }
 
     let sortOptions = {};
-    if (sortType === 'low-high') {
+    if (sortType === "low-high") {
       sortOptions.price = 1;
-    } else if (sortType === 'high-low') {
+    } else if (sortType === "high-low") {
       sortOptions.price = -1;
     }
 
-    const products = await productModel.find(query).sort(sortOptions).skip(skip).limit(limit);
     const totalProducts = await productModel.countDocuments(query);
+
+    if (!req.query.limit) {
+      limit = totalProducts;
+    }
+
+    const products = await productModel
+      .find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
 
     if (!products || products.length === 0) {
       return res.status(200).json({ success: true, count: 0, products: [] });
