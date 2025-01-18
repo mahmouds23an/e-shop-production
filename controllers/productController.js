@@ -67,56 +67,23 @@ const addProduct = async (req, res) => {
 
 const listProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 8;
-    const skip = (page - 1) * limit;
-
-    const { category, subCategory, sortType, searchQuery } = req.query;
-
-    let query = {};
-
-    if (searchQuery) {
-      query.name = { $regex: searchQuery, $options: "i" };
+    const products = await productModel.find().sort({ date: -1 });
+    if (!products) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Products not found" });
     }
-
-    if (category) {
-      query.category = { $in: category.split(",") };
-    }
-
-    if (subCategory) {
-      query.subCategory = { $in: subCategory.split(",") };
-    }
-
-    let sortOptions = {};
-    if (sortType === "low-high") {
-      sortOptions.price = 1;
-    } else if (sortType === "high-low") {
-      sortOptions.price = -1;
-    }
-
-    const totalProducts = await productModel.countDocuments(query);
-
-    if (!req.query.limit) {
-      limit = totalProducts;
-    }
-
-    const products = await productModel
-      .find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit);
-
-    if (!products || products.length === 0) {
-      return res.status(200).json({ success: true, count: 0, products: [] });
+    if (products.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No products found",
+      });
     }
 
     return res.status(200).json({
       success: true,
-      count: products.length,
-      totalProducts,
-      totalPages: Math.ceil(totalProducts / limit),
-      currentPage: page,
       products,
+      message: "Products fetched successfully",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
