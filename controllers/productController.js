@@ -192,10 +192,48 @@ const singleProduct = async (req, res) => {
   }
 };
 
+const getPaginatedProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
+    const products = await productModel
+      .find()
+      .select("-__v -createdAt -updatedAt -costPrice")
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
+    const totalProducts = await productModel.countDocuments();
+
+    if (!products || products.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No products found",
+        products: [],
+        totalPages: 0,
+      });
+    }
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    return res.status(200).json({
+      success: true,
+      products,
+      totalPages,
+      currentPage: page,
+      message: "Products fetched successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   addProduct,
   listProducts,
   removeProduct,
   updateProduct,
   singleProduct,
+  getPaginatedProducts,
 };
