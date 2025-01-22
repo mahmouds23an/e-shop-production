@@ -198,13 +198,24 @@ const getPaginatedProducts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
 
+    const { category, subCategory } = req.query;
+
+    const filter = {};
+    if (category) {
+      filter.category = { $in: category.split(",") };
+    }
+    if (subCategory) {
+      filter.subCategory = { $in: subCategory.split(",") };
+    }
+
     const products = await productModel
-      .find()
+      .find(filter)
       .select("-__v -createdAt -updatedAt -costPrice")
       .sort({ date: -1 })
       .skip(skip)
       .limit(limit);
-    const totalProducts = await productModel.countDocuments();
+
+    const totalProducts = await productModel.countDocuments(filter);
 
     if (!products || products.length === 0) {
       return res.status(200).json({
