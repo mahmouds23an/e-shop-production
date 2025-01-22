@@ -136,6 +136,9 @@ const updateProduct = async (req, res) => {
     if (req.body.bestSeller !== undefined)
       updates.bestSeller = req.body.bestSeller;
 
+    if (req.body.isActive !== undefined)
+      updates.isActive = req.body.isActive;
+
     // Update discount fields
     if (req.body.discountStatus !== undefined)
       updates.discountStatus = req.body.discountStatus;
