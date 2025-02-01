@@ -136,8 +136,7 @@ const updateProduct = async (req, res) => {
     if (req.body.bestSeller !== undefined)
       updates.bestSeller = req.body.bestSeller;
 
-    if (req.body.isActive !== undefined)
-      updates.isActive = req.body.isActive;
+    if (req.body.isActive !== undefined) updates.isActive = req.body.isActive;
 
     // Update discount fields
     if (req.body.discountStatus !== undefined)
@@ -243,6 +242,29 @@ const getPaginatedProducts = async (req, res) => {
   }
 };
 
+const newCollection = async (req, res) => {
+  try {
+    const newCollection = await productModel
+      .find()
+      .sort({ date: -1 })
+      .limit(30);
+    if (!newCollection.length) {
+      return res.status(404).json({
+        success: true,
+        message: "No new products found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      newCollection,
+      message: "New collection fetched successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   addProduct,
   listProducts,
@@ -250,4 +272,5 @@ export {
   updateProduct,
   singleProduct,
   getPaginatedProducts,
+  newCollection,
 };
