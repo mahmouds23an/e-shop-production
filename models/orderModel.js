@@ -48,6 +48,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    promoCode: {
+      type: String,
+      default: null,
+    },
     review: {
       rating: {
         type: Number,

@@ -3,7 +3,7 @@ import userModel from "../models/userModel.js";
 
 const placeOrder = async (req, res) => {
   try {
-    const { items, amount, address, discount, delivery_fee, note } = req.body;
+    const { items, amount, address, discount, delivery_fee, note, promoCode } = req.body;
     const userId = req.user.id;
     const orderData = {
       userId,
@@ -15,6 +15,7 @@ const placeOrder = async (req, res) => {
       paymentMethod: "COD",
       payment: false,
       note: note || "",
+      promoCode: promoCode || null,
       date: Date.now(),
     };
 
