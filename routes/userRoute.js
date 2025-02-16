@@ -8,9 +8,11 @@ import {
   removeProfilePicture,
   addToFavorites,
   removeFromFavorites,
+  getAllUsers,
 } from "../controllers/userController.js";
 import authUser from "../middleware/auth.js";
 import uploadProfileImage from "../middleware/multer.js";
+import adminAuth from "../middleware/adminAuth.js";
 
 const userRouter = express.Router();
 
@@ -27,5 +29,6 @@ userRouter.post(
 userRouter.post("/remove-profile-picture", authUser, removeProfilePicture);
 userRouter.post("/add-to-favorites", authUser, addToFavorites);
 userRouter.post("/remove-from-favorites", authUser, removeFromFavorites);
+userRouter.get("/all-users", adminAuth, getAllUsers);
 
 export default userRouter;

@@ -274,6 +274,15 @@ const removeFromFavorites = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.find();
+    return res.status(200).json({ success: true, users });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -283,4 +292,5 @@ export {
   removeProfilePicture,
   addToFavorites,
   removeFromFavorites,
+  getAllUsers,
 };
