@@ -21,6 +21,18 @@ const promoCodeSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    useManyTimes: {
+      type: Boolean,
+      default: true,
+    },
+    used: {
+      type: Boolean,
+      default: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
