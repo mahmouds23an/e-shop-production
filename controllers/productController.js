@@ -202,7 +202,8 @@ const getPaginatedProducts = async (req, res) => {
 
     const { category, subCategory } = req.query;
 
-    const filter = {};
+    const filter = { isActive: true };
+
     if (category) {
       filter.category = { $in: category.split(",") };
     }
