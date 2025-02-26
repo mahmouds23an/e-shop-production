@@ -14,6 +14,7 @@ const addProduct = async (req, res) => {
       bestSeller,
       discountedPrice,
       discountStatus,
+      collection,
     } = req.body;
 
     const existingProduct = await productModel.findOne({ name });
@@ -55,6 +56,9 @@ const addProduct = async (req, res) => {
       discountedPrice:
         discountStatus === "true" ? Number(discountedPrice) : null,
       date: Date.now(),
+      collection: ["Winter", "Summer"].includes(collection)
+        ? collection
+        : "Others",
     });
     const product = await newProduct.save();
     return res
@@ -266,6 +270,30 @@ const newCollection = async (req, res) => {
   }
 };
 
+const getSummerCollection = async (req, res) => {
+  try {
+    const summerProducts = await productModel.find({ collection: "Summer" })
+      .sort({ date: -1 })
+      .limit(20);
+
+    return res.status(200).json({ success: true, products: summerProducts });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getWinterCollection = async (req, res) => {
+  try {
+    const winterProducts = await productModel.find({ collection: "Winter" })
+      .sort({ date: -1 })
+      .limit(20);
+
+    return res.status(200).json({ success: true, products: winterProducts });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   addProduct,
   listProducts,
@@ -274,4 +302,6 @@ export {
   singleProduct,
   getPaginatedProducts,
   newCollection,
+  getSummerCollection,
+  getWinterCollection,
 };

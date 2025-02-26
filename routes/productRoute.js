@@ -7,6 +7,8 @@ import {
   singleProduct,
   getPaginatedProducts,
   newCollection,
+  getSummerCollection,
+  getWinterCollection,
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
@@ -30,5 +32,7 @@ productRouter.post("/delete-product", adminAuth, removeProduct);
 productRouter.post("/update-product", adminAuth, updateProduct);
 productRouter.get("/get-paginated-products", getPaginatedProducts);
 productRouter.get("/new-collection", newCollection);
+productRouter.get("/summer-collection", getSummerCollection);
+productRouter.get("/winter-collection", getWinterCollection);
 
 export default productRouter;

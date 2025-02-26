@@ -53,6 +53,11 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    collection: {
+      type: String,
+      enum: ["Winter", "Summer", "Others"],
+      default: "Others",
+    },
   },
   { timestamps: true }
 );
