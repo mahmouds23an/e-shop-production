@@ -14,7 +14,7 @@ const addProduct = async (req, res) => {
       bestSeller,
       discountedPrice,
       discountStatus,
-      collection,
+      clothesCollection,
     } = req.body;
 
     const existingProduct = await productModel.findOne({ name });
@@ -56,8 +56,8 @@ const addProduct = async (req, res) => {
       discountedPrice:
         discountStatus === "true" ? Number(discountedPrice) : null,
       date: Date.now(),
-      collection: ["Winter", "Summer"].includes(collection)
-        ? collection
+      clothesCollection: ["Winter", "Summer"].includes(clothesCollection)
+        ? clothesCollection
         : "Others",
     });
     const product = await newProduct.save();
@@ -272,7 +272,8 @@ const newCollection = async (req, res) => {
 
 const getSummerCollection = async (req, res) => {
   try {
-    const summerProducts = await productModel.find({ collection: "Summer" })
+    const summerProducts = await productModel
+      .find({ clothesCollection: "Summer" })
       .sort({ date: -1 })
       .limit(20);
 
@@ -284,7 +285,8 @@ const getSummerCollection = async (req, res) => {
 
 const getWinterCollection = async (req, res) => {
   try {
-    const winterProducts = await productModel.find({ collection: "Winter" })
+    const winterProducts = await productModel
+      .find({ clothesCollection: "Winter" })
       .sort({ date: -1 })
       .limit(20);
 

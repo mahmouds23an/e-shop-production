@@ -53,7 +53,7 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    collection: {
+    clothesCollection: {
       type: String,
       enum: ["Winter", "Summer", "Others"],
       default: "Others",
