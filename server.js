@@ -11,7 +11,6 @@ import orderRouter from "./routes/orderRoute.js";
 import promoCodeRouter from "./routes/promoCodeRoute.js";
 import feedBackRouter from "./routes/feedBackRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
-import eventRouter from "./routes/eventRoute.js";
 
 // App Config
 const app = express();
@@ -29,7 +28,6 @@ app.use("/api/order", orderRouter);
 app.use("/api/promo", promoCodeRouter);
 app.use("/api/feedBack", feedBackRouter);
 app.use("/api/review", reviewRouter);
-app.use("/api/event", eventRouter);
 
 // DB Config
 import connectDB from "./config/mongodb.js";
