@@ -52,6 +52,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    orderCancelNote: {
+      type: String,
+      default: "",
+    },
     review: {
       rating: {
         type: Number,

@@ -9,6 +9,7 @@ import {
   getOrdersReviews,
   deleteAllOrdersReviews,
   getOrderById,
+  cancelOrder,
 } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
@@ -27,5 +28,6 @@ orderRouter.post("/stripe", authUser, placeOrderStripe);
 orderRouter.post("/user-orders", authUser, userOrders);
 orderRouter.post("/review", authUser, reviewDeliveredOrder);
 orderRouter.get("/:orderId", authUser, getOrderById);
+orderRouter.post("/cancel", authUser, cancelOrder);
 
 export default orderRouter;

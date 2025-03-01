@@ -3,7 +3,8 @@ import userModel from "../models/userModel.js";
 
 const placeOrder = async (req, res) => {
   try {
-    const { items, amount, address, discount, delivery_fee, note, promoCode } = req.body;
+    const { items, amount, address, discount, delivery_fee, note, promoCode } =
+      req.body;
     const userId = req.user.id;
     const orderData = {
       userId,
@@ -153,6 +154,37 @@ const getOrderById = async (req, res) => {
   }
 };
 
+const cancelOrder = async (req, res) => {
+  const userId = req.user.id;
+  const { orderId } = req.body;
+  try {
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+    if (order.userId !== userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    if (order.status === "Out for delivery" || order.status === "Delivered") {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Order cannot be cancelled at this time",
+        });
+    }
+    order.status = "Cancelled";
+    await order.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Order cancelled successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   placeOrder,
   placeOrderStripe,
@@ -163,4 +195,5 @@ export {
   getOrdersReviews,
   deleteAllOrdersReviews,
   getOrderById,
+  cancelOrder,
 };
