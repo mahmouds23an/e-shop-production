@@ -35,7 +35,9 @@ const placeOrderStripe = async (req, res) => {};
 
 const allOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({}).sort({ date: -1 });
+    const orders = await orderModel
+      .find({ status: { $ne: "Cancelled" } })
+      .sort({ date: -1 });
     if (!orders) {
       return res
         .status(404)
