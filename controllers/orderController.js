@@ -59,7 +59,10 @@ const allOrders = async (req, res) => {
 const userOrders = async (req, res) => {
   try {
     const userId = req.user.id;
-    const orders = await orderModel.find({ userId });
+    const orders = await orderModel.find({
+      userId,
+      status: { $ne: "Cancelled" },
+    });
     if (!orders) {
       return res
         .status(404)
@@ -156,7 +159,7 @@ const getOrderById = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   const userId = req.user.id;
-  const { orderId } = req.body;
+  const { orderId, cancelNote } = req.body;
   try {
     const order = await orderModel.findById(orderId);
     if (!order) {
@@ -168,14 +171,13 @@ const cancelOrder = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
     if (order.status === "Out for delivery" || order.status === "Delivered") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Order cannot be cancelled at this time",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Order cannot be cancelled at this time",
+      });
     }
     order.status = "Cancelled";
+    order.orderCancelNote = cancelNote || "";
     await order.save();
     return res
       .status(200)
