@@ -36,7 +36,6 @@ const placeOrderStripe = async (req, res) => {};
 const allOrders = async (req, res) => {
   try {
     const orders = await orderModel
-      .find({ status: { $ne: "Cancelled" } })
       .sort({ date: -1 });
     if (!orders) {
       return res
@@ -47,7 +46,7 @@ const allOrders = async (req, res) => {
       return res.status(200).json({
         success: true,
         orders: [],
-        message: "There is now orders to show",
+        message: "There is no orders to show",
       });
     }
     return res
